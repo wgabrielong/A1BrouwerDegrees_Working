@@ -1,0 +1,6 @@
+# Ignore m2 aux files
+*.m2~
+*.m2#
+
+# Ignore Finder created directory files
+.DS_Store
