@@ -8,5 +8,5 @@ A1-Brouwer Degrees Working Repo
 
 Would be really fun:
 
-* Implement $K_\ast^\text{M}$ and $K_\ast^{\text{MW}}$ into Macaulay2
+* Implement $K_\ast^\text{M}$ and $K_\ast^{\text{MW}}$ into Macaulay2 -- by this we mean provide a nice way to give minimal presentations for elements in these rings in terms of generators, and be able to add, multiply, and check equality of elements.
 * Take a form in $\text{GW}(k)$ and return the minimal $n$ so that it vanishes in $I^n$
