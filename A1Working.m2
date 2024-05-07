@@ -1,6 +1,6 @@
 --A1BrouwerDegrees.m2
 newPackage(
-    "A1BrouwerDegrees",
+    "A1Working",
     Version=>"1.0",
     Date=>"June 5, 2023",
     Authors=>{
@@ -32,7 +32,7 @@ newPackage(
 	 Email=>"gong@bowdoin.edu",
 	 HomePage=>"https://wgabrielong.github.io/"}
 	},
-    Headline=>"for working with A1-Brouwer degree computations",
+    Headline=>"for working with A1Working degree computations",
     PackageImports=>{
 	"Parametrization",
 	"RealRoots",
@@ -102,40 +102,40 @@ export{
     }
 
 -- Basic arithmetic, p-adic, and commutative algebra operations we will use
-load "./A1-Brouwer/Code/ArithmeticMethods.m2"
+load "./A1Working/Code/ArithmeticMethods.m2"
 
 -- Basic manipulations of matrices we will use
-load "./A1-Brouwer/Code/MatrixMethods.m2"
+load "./A1Working/Code/MatrixMethods.m2"
 
 -- Establishing the GrothendieckWittClass type and some basic manipulations
-load "./A1-Brouwer/Code/GrothendieckWittClasses.m2"
+load "./A1Working/Code/GrothendieckWittClasses.m2"
 
 -- For building new symmetric bilinear forms
-load "./A1-Brouwer/Code/BuildingForms.m2"
+load "./A1Working/Code/BuildingForms.m2"
 
 -- For providing simplified representatives of symmetric bilinear forms
-load "./A1-Brouwer/Code/SimplifiedRepresentatives.m2"
+load "./A1Working/Code/SimplifiedRepresentatives.m2"
 
 -- For Hilbert symbols over p-adic numbers
-load "./A1-Brouwer/Code/HilbertSymbols.m2"
+load "./A1Working/Code/HilbertSymbols.m2"
 
 -- Invariants of symmetric bilinear forms
-load "./A1-Brouwer/Code/GWInvariants.m2"
+load "./A1Working/Code/GWInvariants.m2"
     
 -- Local and global A1-brouwer degrees
-load "./A1-Brouwer/Code/LocalGlobalDegrees.m2"
+load "./A1Working/Code/LocalGlobalDegrees.m2"
 
 -- Checking if forms are isomorphic
-load "./A1-Brouwer/Code/IsomorphismOfForms.m2"
+load "./A1Working/Code/IsomorphismOfForms.m2"
 
 -- For verifying (an)isotropy
-load "./A1-Brouwer/Code/Isotropy.m2"
+load "./A1Working/Code/Isotropy.m2"
 
 -- Anisotropic dimension
-load "./A1-Brouwer/Code/AnisotropicDimension.m2"
+load "./A1Working/Code/AnisotropicDimension.m2"
 
 -- Finally, decomposing forms
-load "./A1-Brouwer/Code/Decomposition.m2"
+load "./A1Working/Code/Decomposition.m2"
 
 ----------------------------
 ----------------------------
@@ -146,8 +146,8 @@ load "./A1-Brouwer/Code/Decomposition.m2"
 beginDocumentation()
 
 document{
-    Key => A1BrouwerDegrees,
-    Headline => "for working with A1-Brouwer degree computations",
+    Key => A1Working,
+    Headline => "for working with A1Working degree computations",
     PARA{"This package is intended computing and manipulating ", TO2(localA1Degree,"local"), " and ", TO2(globalA1Degree,"global"), " ", TEX///$\mathbb{A}^1$///, EM "-Brouwer degrees."," Global Brouwer degrees are non-degenerate symmetric bilinear forms valued in the Grothendieck-Witt ring of a field ", TEX///$\text{GW}(k)$///, "."},
     PARA{"In order to simplify the forms produced, this package produces invariants of symmetric bilinear forms, including their ", TO2(WittIndex,"Witt indices"), ", their ", TO2(integralDiscriminant,"discriminants"), ", and their ", TO2(HasseWittInvariant, "Hasse Witt invariants"), ". Quadratic forms can furthermore be ", TO2(sumDecomposition,"decomposed"), " into their isotropic and ", TO2(anisotropicPart,"anisotropic parts"), ". Finally, and perhaps most crucially, we can certify whether two symmetric bilinear forms are ", TO2(gwIsomorphic,"isomorphic") , " in the Grothendieck-Witt ring."},
     }
@@ -155,29 +155,29 @@ document{
 undocumented {
     }
 
-load "./A1-Brouwer/Documentation/ArithmeticMethodsDoc.m2"
+load "./A1Working/Documentation/ArithmeticMethodsDoc.m2"
 
-load "./A1-Brouwer/Documentation/MatrixMethodsDoc.m2"
+load "./A1Working/Documentation/MatrixMethodsDoc.m2"
 
-load "./A1-Brouwer/Documentation/GrothendieckWittClassesDoc.m2"
+load "./A1Working/Documentation/GrothendieckWittClassesDoc.m2"
 
-load "./A1-Brouwer/Documentation/BuildingFormsDoc.m2"
+load "./A1Working/Documentation/BuildingFormsDoc.m2"
 
-load "./A1-Brouwer/Documentation/SimplifiedRepresentativesDoc.m2"
+load "./A1Working/Documentation/SimplifiedRepresentativesDoc.m2"
 
-load "./A1-Brouwer/Documentation/HilbertSymbolsDoc.m2"
+load "./A1Working/Documentation/HilbertSymbolsDoc.m2"
 
-load "./A1-Brouwer/Documentation/GWInvariantsDoc.m2"
+load "./A1Working/Documentation/GWInvariantsDoc.m2"
 
-load "./A1-Brouwer/Documentation/LocalGlobalDegreesDoc.m2"
+load "./A1Working/Documentation/LocalGlobalDegreesDoc.m2"
 
-load "./A1-Brouwer/Documentation/IsomorphismOfFormsDoc.m2"
+load "./A1Working/Documentation/IsomorphismOfFormsDoc.m2"
 
-load "./A1-Brouwer/Documentation/IsotropyDoc.m2"
+load "./A1Working/Documentation/IsotropyDoc.m2"
 
-load "./A1-Brouwer/Documentation/AnisotropicDimensionDoc.m2"
+load "./A1Working/Documentation/AnisotropicDimensionDoc.m2"
 
-load "./A1-Brouwer/Documentation/DecompositionDoc.m2"
+load "./A1Working/Documentation/DecompositionDoc.m2"
 
 ----------------------------
 ----------------------------
