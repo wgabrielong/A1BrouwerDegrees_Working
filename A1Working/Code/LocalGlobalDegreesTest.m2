@@ -42,27 +42,59 @@ globalA1Degree (List) := (GrothendieckWittClass) => (Endo) -> (
     -- Initialize a polynomial ring in X_i's and Y_i's to compute the Bezoutian in
     X := local X;
     Y := local Y;
- 
-    R := kk(monoid[X_1..X_n|Y_1..Y_n]);
-    -- Create an (n x n) matrix D which will be populated by \Delta_{ij} in the paper
-    D := "";
-    try D = mutableMatrix id_((frac R)^n) else D= mutableMatrix id_(R^n);
-    
-    for i from 0 to (n-1) do (
-	for j from 0 to (n-1) do(
-	    -- iterate through the entries of the matrix D and populate it with the following information ...
-        -- create the list {Y_1, ..., Y_(j-1), X_j, ..., X_n}. Note Macaulay2 is 0-indexed hence the difference in notation. 
-	    targetList1 := apply(toList (Y_1..Y_j|X_(j+1)..X_n),i->i_R);
-        -- create the list {Y_1, ..., Y_j, X_(j+1), ..., X_n }. Note Macaulay2 is 0-indexed hence the difference in notation. 
-	    targetList2 := apply(toList (Y_1..Y_(j+1)| X_(j+2)..X_n),i->i_R); 
-        -- suppose our endomorphisms are given in the variables x_1, ..., x_n.
-        -- map f_i(x_1, ..., x_n) to f_i(Y_1, ..., Y_(j-1), X_j, ..., X_n) resp.
-        -- then take the difference f_i(Y_1, ..., Y_(j-1), X_j, ..., X_n) - f_i(Y_1, ... Y_j, X_(j+1), ..., X_n)
-        numeratorD := ((map(R,S,targetList1))(Endo_i)-(map(R,S,targetList2))(Endo_i)); 
-        -- divide it by X_j - Y_j, Note Macaulay2 is 0-indexed hence the difference in notation. 
+
+    -- Check if kk is a field extension of the allowed fields. 
+    if (instance(kk, PolynomialRing) and numgens(ambient(coefficientRing(kk))) == 1) then (
+        a = local gens(ambient(coefficientRing(kk)))_0;
+        mp = local ideal minimalPresentation(kk);
+        L = local coefficientRing(ambient(coefficientRing(kk)));
+        R = L(monoid[a|X_1..X_n|Y_1..Y_n]);
+        -- Create an (n x n) matrix D which will be populated by \Delta_{ij} in the paper
+            D := "";
+            try D = mutableMatrix id_((frac R)^n) else D= mutableMatrix id_(R^n);
+            
+            for i from 0 to (n-1) do (
+            for j from 0 to (n-1) do(
+                -- iterate through the entries of the matrix D and populate it with the following information ...
+                -- create the list {Y_1, ..., Y_(j-1), X_j, ..., X_n}. Note Macaulay2 is 0-indexed hence the difference in notation. 
+                targetList1 := apply(toList (Y_1..Y_j|X_(j+1)..X_n),i->i_R);
+                -- create the list {Y_1, ..., Y_j, X_(j+1), ..., X_n }. Note Macaulay2 is 0-indexed hence the difference in notation. 
+                targetList2 := apply(toList (Y_1..Y_(j+1)| X_(j+2)..X_n),i->i_R); 
+                -- suppose our endomorphisms are given in the variables x_1, ..., x_n.
+                -- map f_i(x_1, ..., x_n) to f_i(Y_1, ..., Y_(j-1), X_j, ..., X_n) resp.
+                -- then take the difference f_i(Y_1, ..., Y_(j-1), X_j, ..., X_n) - f_i(Y_1, ... Y_j, X_(j+1), ..., X_n)
+                numeratorD := ((map(R,S,targetList1))(Endo_i)-(map(R,S,targetList2))(Endo_i)); 
+                -- divide it by X_j - Y_j, Note Macaulay2 is 0-indexed hence the difference in notation. 
+            D_(i,j)= sub(numeratorD/((X_(j+1))_R-(Y_(j+1))_R), kk); 
+            );
+            );
+            return D
+        )
+    else (
+        R := kk(monoid[X_1..X_n|Y_1..Y_n]);
+        -- Create an (n x n) matrix D which will be populated by \Delta_{ij} in the paper
+        D := "";
+        try D = mutableMatrix id_((frac R)^n) else D= mutableMatrix id_(R^n);
+        
+        for i from 0 to (n-1) do (
+        for j from 0 to (n-1) do(
+            -- iterate through the entries of the matrix D and populate it with the following information ...
+            -- create the list {Y_1, ..., Y_(j-1), X_j, ..., X_n}. Note Macaulay2 is 0-indexed hence the difference in notation. 
+            targetList1 := apply(toList (Y_1..Y_j|X_(j+1)..X_n),i->i_R);
+            -- create the list {Y_1, ..., Y_j, X_(j+1), ..., X_n }. Note Macaulay2 is 0-indexed hence the difference in notation. 
+            targetList2 := apply(toList (Y_1..Y_(j+1)| X_(j+2)..X_n),i->i_R); 
+            -- suppose our endomorphisms are given in the variables x_1, ..., x_n.
+            -- map f_i(x_1, ..., x_n) to f_i(Y_1, ..., Y_(j-1), X_j, ..., X_n) resp.
+            -- then take the difference f_i(Y_1, ..., Y_(j-1), X_j, ..., X_n) - f_i(Y_1, ... Y_j, X_(j+1), ..., X_n)
+            numeratorD := ((map(R,S,targetList1))(Endo_i)-(map(R,S,targetList2))(Endo_i)); 
+            -- divide it by X_j - Y_j, Note Macaulay2 is 0-indexed hence the difference in notation. 
 	    D_(i,j)= numeratorD/((X_(j+1))_R-(Y_(j+1))_R); 
-	); 
+	    ); 
+        );
+        return D
     );
+ 
+    
     
     -- Set up the local variables bezDet and bezDetR
     bezDet:="";
@@ -275,3 +307,6 @@ localA1Degree (List, Ideal) := (GrothendieckWittClass) => (Endo,p) -> (
     );
     return gwClass(matrix(B));
     );
+
+
+
