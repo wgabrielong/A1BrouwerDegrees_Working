@@ -122,7 +122,7 @@ congruenceDiagonalizeSimplify (Matrix) := (Matrix) => (AnonMut) -> (
         );
     if not isSquareAndSymmetric(AnonMut) then error "matrix is not symmetric";
 
-    A := mutableMatrix(congruenceDiagonalize(AnonMut);
+    A := mutableMatrix(congruenceDiagonalize(AnonMut));
     n := numRows(A);
 
     -- If the field is the complex numbers, replace each nonzero entry of the diagonalization by 1
@@ -178,6 +178,7 @@ congruenceDiagonalizeSimplify (Matrix) := (Matrix) => (AnonMut) -> (
 	);
     matrix A
     )
+
 
 -- Input: A matrix representing a symmetric bilinear form
 -- Output: A diagonal matrix representing the nondegenerate part of the symmetric bilinear form
