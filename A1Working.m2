@@ -135,7 +135,7 @@ load "./A1Working/Code/Isotropy.m2"
 load "./A1Working/Code/AnisotropicDimension.m2"
 
 -- Finally, decomposing forms
-load "./A1Working/Code/Decomposition.m2"
+load "./A1Working/Code/DecompositionAniso2.m2"
 
 ----------------------------
 ----------------------------
