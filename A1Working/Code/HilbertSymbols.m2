@@ -53,12 +53,12 @@ HilbertSymbol (ZZ, ZZ, ZZ) := (ZZ) => (a, b, p) -> (
     if p == 2 then (
 	-- The reductions of u and v are mod 8, as the calculation of (u-1)/2 and (u^2-1)/8 below 
 	-- depends on their mod 8 reduction
-	u = (u % 8);
-	v = (v % 8);
-	alpha = (alpha % 2);
-	beta = (beta % 2);
+	u = u % 8;
+	v = v % 8;
+	alpha = alpha % 2;
+	beta = beta % 2;
 	d := sub((u-1)*(v-1)/4 + alpha*(v^2-1)/8 + beta*(u^2-1)/8,ZZ);
-	return ((-1)^d);
+	return (-1)^d;
 	);
     )
 

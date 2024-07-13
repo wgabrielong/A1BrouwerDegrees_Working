@@ -9,7 +9,7 @@ GrothendieckWittClass.synonym = "Grothendieck Witt Class"
 
 gwClass = method()
 gwClass (Matrix) := GrothendieckWittClass => M -> (
-   if isWellDefined(M) then (
+   if isWellDefined M then (
         new GrothendieckWittClass from {
             symbol matrix => M,
             symbol cache => new CacheTable
@@ -32,13 +32,13 @@ isWellDefined (Matrix) := Boolean => M -> (
     if not isSquareAndSymmetric(M) then return false;
 
     -- Return false if the matrix represents a degenerate form
-    if isDegenerate(M) then return false;
+    if isDegenerate M then return false;
 
     -- Return false if the matrix isn't defined over a field
-    if not isField ring M then return false;
+    if not isField(ring M) then return false;
     
     -- Returns false if the matrix is defined over a field of characteristic 2
-    if char ring M == 2 then return false;
+    if char(ring M) == 2 then return false;
 
     -- Otherwise, return true
     true
@@ -49,7 +49,7 @@ isWellDefined (Matrix) := Boolean => M -> (
 
 baseField = method()
 baseField GrothendieckWittClass := Ring => beta -> (
-    ring beta.matrix
+    ring(beta.matrix)
     )
 
 -- Input: Two Grothendieck-Witt classes beta and gamma
@@ -57,8 +57,8 @@ baseField GrothendieckWittClass := Ring => beta -> (
 
 gwAdd = method()
 gwAdd(GrothendieckWittClass, GrothendieckWittClass) := GrothendieckWittClass => (beta, gamma) -> (
-    Kb := baseField(beta);
-    Kg := baseField(gamma);
+    Kb := baseField beta;
+    Kg := baseField gamma;
     
     -- Galois field case
     if instance(Kb, GaloisField) and instance(Kg, GaloisField) then (
@@ -77,8 +77,8 @@ gwAdd(GrothendieckWittClass, GrothendieckWittClass) := GrothendieckWittClass => 
 
 gwMultiply = method()
 gwMultiply(GrothendieckWittClass, GrothendieckWittClass) := GrothendieckWittClass => (beta, gamma) -> (
-    Kb := baseField(beta);
-    Kg := baseField(gamma);
+    Kb := baseField beta;
+    Kg := baseField gamma;
     
     -- Galois field case
     if instance(Kb, GaloisField) and instance(Kg, GaloisField) then (

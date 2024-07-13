@@ -48,7 +48,7 @@ isDiagonal (Matrix) := Boolean => M -> (
 
     if not isSquare(M) then error "matrix is not a square";
 
-    n := numRows(M);
+    n := numRows M;
     -- Check the matrix entries that aren't on the diagonal
     for i from 0 to n-2 do (
 	for j from  i+1 to n-1 do (
@@ -70,12 +70,12 @@ congruenceDiagonalize (Matrix) := (Matrix) => (AnonMut) -> (
     if not isSquareAndSymmetric(AnonMut) then error "matrix is not symmetric";
     
     -- If the matrix is already diagonal, then return it
-    if isDiagonal(AnonMut) then return AnonMut;
+    if isDiagonal AnonMut then return AnonMut;
     
     -- Otherwise, we iterate through positions below the diagonal, performing row operations followed by the corresponding
     -- column operations in order to obtain a diagonal matrix congruent to the original
     A := mutableMatrix AnonMut;
-    n := numRows(A);
+    n := numRows A;
     for col from 0 to n - 1 do (
 	-- If diagonal entry in column "col" is zero
         if A_(col,col) == 0 then (
@@ -122,8 +122,8 @@ congruenceDiagonalizeSimplify (Matrix) := (Matrix) => (AnonMut) -> (
         );
     if not isSquareAndSymmetric(AnonMut) then error "matrix is not symmetric";
 
-    A := mutableMatrix(congruenceDiagonalize(AnonMut));
-    n := numRows(A);
+    A := mutableMatrix congruenceDiagonalize(AnonMut);
+    n := numRows A;
 
     -- If the field is the complex numbers, replace each nonzero entry of the diagonalization by 1
     if instance(k,ComplexField) then (
@@ -147,9 +147,9 @@ congruenceDiagonalizeSimplify (Matrix) := (Matrix) => (AnonMut) -> (
 	)
 
     -- If the field is the rational numbers, replace each diagonal entry by its squarefree part
-    else if (k === QQ) then (
+    else if k === QQ then (
 	for i from 0 to (n-1) do (
-            A_(i,i) = squarefreePart(A_(i,i));
+            A_(i,i) = squarefreePart A_(i,i);
 	    );
 	)
 
@@ -158,11 +158,11 @@ congruenceDiagonalizeSimplify (Matrix) := (Matrix) => (AnonMut) -> (
         -- Initially let the nonsquare representative be -1
         nonSquareRep := sub(-1,k);
         -- If -1 is a square, then find another nonsquare representative
-        if legendreBoolean(sub(-1,k)) then (
+        if legendreBoolean sub(-1,k) then (
 	    for i from 0 to (n-1) do (
-	        if (diagForm_(i,i) != 0 and (not legendreBoolean(diagForm_(i,i)))) then (
+	        if (A_(i,i) != 0 and (not legendreBoolean(A_(i,i)))) then (
                     -- If there is a nonsquare on the diagonal, choose it as the nonsquare representative
-	     	    nonSquareRep = diagForm_(i,i);
+	     	    nonSquareRep = A_(i,i);
                     break;
 		    );
                 );
@@ -179,13 +179,12 @@ congruenceDiagonalizeSimplify (Matrix) := (Matrix) => (AnonMut) -> (
     matrix A
     )
 
-
 -- Input: A matrix representing a symmetric bilinear form
 -- Output: A diagonal matrix representing the nondegenerate part of the symmetric bilinear form
 
 nondegeneratePartDiagonal = method()
 nondegeneratePartDiagonal (Matrix) := (Matrix) => (A) -> (
-    diagA := congruenceDiagonalize(A);
+    diagA := congruenceDiagonalize A;
     i := 0;
     while (i < numRows(diagA)) do (
         if (diagA_(i,i) == 0) then (

@@ -123,7 +123,7 @@ load "./A1Working/Code/HilbertSymbols.m2"
 load "./A1Working/Code/GWInvariants.m2"
     
 -- Local and global A1-brouwer degrees
-load "./A1Working/Code/LocalGlobalDegrees.m2"
+load "./A1Working/Code/LocalGlobalDegreesTest.m2"
 
 -- Checking if forms are isomorphic
 load "./A1Working/Code/IsomorphismOfForms.m2"

@@ -5,9 +5,16 @@
 -- Input: A Grothendieck-Witt class
 -- Output: The rank of a quadratic form representing the Grothendieck-Witt class
 
-rank (GrothendieckWittClass) := (ZZ) => (alpha) -> (
+rankForm = method()
+rankForm (GrothendieckWittClass) := (ZZ) => (alpha) -> (
     numRows(alpha.matrix)
     )
+
+rankForm (Matrix) := (ZZ) => (M) -> (
+    rank M
+    )
+
+
 
 -- Input: A symmetric matrix over QQ or RR
 -- Output: The number of positive entries on the diagonal of a diagonal matrix to which it is congruent
@@ -26,7 +33,7 @@ numPosDiagEntries (Matrix) := (Matrix) => (A) -> (
         A = congruenceDiagonalize(A);
         );
     posDiagEntries := 0;
-    for i from 0 to (numRows(A)-1) do (
+    for i from 0 to (numRows(A) - 1) do (
         if A_(i,i) > 0 then (
             posDiagEntries = posDiagEntries + 1;
             );
@@ -48,10 +55,10 @@ numNegDiagEntries (Matrix) := (Matrix) => (A) -> (
         error "Only implemented over QQ and RR";
         );
     if not isDiagonal(A) then (
-        A = congruenceDiagonalize(A);
+        A = congruenceDiagonalize A;
         );
     negDiagEntries := 0;
-    for i from 0 to (numRows(A)-1) do (
+    for i from 0 to (numRows(A) - 1) do (
         if A_(i,i) < 0 then (
             negDiagEntries = negDiagEntries + 1;
             );
@@ -94,11 +101,11 @@ signature (GrothendieckWittClass) := ZZ => (beta) -> (
 
 integralDiscriminant = method()
 integralDiscriminant (GrothendieckWittClass) := (ZZ) => (beta) -> (
-    kk := baseField(beta);
+    kk := baseField beta;
     if not kk === QQ then error "GrothendieckWittClass is not over QQ";
 
     -- Return a squarefree integral representative of the product of diagonal entries of a diagonal representative of the form 
-    squarefreePart(product(diagonalEntries(beta)))
+    squarefreePart product(diagonalEntries(beta))
     )
 
 -- Input: A Grothendieck-Witt class defined over QQ
@@ -106,11 +113,11 @@ integralDiscriminant (GrothendieckWittClass) := (ZZ) => (beta) -> (
 
 relevantPrimes = method()
 relevantPrimes (GrothendieckWittClass) := List => (beta) -> (
-    kk := baseField(beta);
+    kk := baseField beta;
     if not kk === QQ then error "GrothendieckWittClass is not over QQ";
     
     -- Find the diagonal entries of a diagonal integral representative of the form
-    D := diagonalEntries(beta);
+    D := diagonalEntries( diagonalClass beta );
     
     -- Make a list of all prime factors of diagonal entries
     L := {};
@@ -149,3 +156,4 @@ HasseWittInvariant(GrothendieckWittClass, ZZ) := ZZ => (beta,p) -> (
     if not (kk === QQ) then error "method is only implemented over the rationals";
     HasseWittInvariant(diagonalEntries(beta),p)
     )
+

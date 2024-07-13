@@ -55,7 +55,7 @@ padicValuation (QQ, ZZ) := (ZZ) => (q, p) -> (
 legendreBoolean = method()
 legendreBoolean (RingElement) := (Boolean) => a -> (
     if not instance(ring(a),GaloisField) then error "legendreBoolean only works for Galois fields";
-    q := (ring(a)).order;
+    q := (ring a).order;
     -- Detects if a is a square in F_q
     a^((q-1)//2) == 1 
     )
@@ -72,7 +72,7 @@ squareSymbol(ZZ, ZZ) := (ZZ) => (a, p) -> (
     if even e1 then (
     	a1 := sub(a/(p^e1), ZZ);
 	a2 := sub(a1, R);
-	if legendreBoolean(a2) then (
+	if legendreBoolean a2 then (
 	    return 1;
 	    ) 
 	else (
@@ -97,9 +97,9 @@ equalUptoPadicSquare (ZZ, ZZ, ZZ) := (Boolean) => (a, b, p) -> (
     if odd p then (
         -- p is odd and we need to check that the powers of p have the same parity, and the units
         -- differ by a square in GF(p)
-        a1 := squarefreePart(a);
-        b1 := squarefreePart(b);
-        if (padicValuation(a1, p ) != padicValuation(b1, p)) then (
+        a1 := squarefreePart a;
+        b1 := squarefreePart b;
+        if (padicValuation(a1, p) != padicValuation(b1, p)) then (
 	    return false;
             )
         else (
@@ -112,9 +112,9 @@ equalUptoPadicSquare (ZZ, ZZ, ZZ) := (Boolean) => (a, b, p) -> (
     else (
         -- Case when p=2. Here we have to check that the powers of p have the same parity, and 
         -- that the units agree mod 8.
-        a1 = squarefreePart(a);
-        b1 = squarefreePart(b);
-        if (padicValuation(a1, p ) != padicValuation(b1, p)) then (
+        a1 = squarefreePart a;
+        b1 = squarefreePart b;
+        if (padicValuation(a1, p) != padicValuation(b1, p)) then (
 	    return false;
             )
         else (
@@ -150,15 +150,15 @@ localAlgebraBasis (List, Ideal) := (List) => (L,p) -> (
     
     -- Ambient ring
     R := ring L#0;
-    I := ideal(L);
+    I := ideal L;
     
     -- Check whether or not the ideal is zero-dimensional
     if dim I > 0 then error "morphism does not have isolated zeroes";
     if not isSubset(I,p) then error "prime is not a zero of function";
     J := I:saturate(I,p);
     A := R/J;
-    B := basis(A);
-    flatten(entries(B))
+    B := basis A;
+    flatten entries(B)
     )
 
 -- Input: A zero-dimensional ideal (f_1,...,f_n) < k[x_1,...,x_n].
@@ -170,7 +170,7 @@ rankGlobalAlgebra (List) := (ZZ) => (Endo) -> (
     -- Get the underlying field    
     kk := coefficientRing(ring(Endo#0));    
     if not isField(kk) then (
-    	kk = toField(kk);
+    	kk = toField kk;
     	);
     
     -- Let S = k[x_1,...,x_n] be the ambient polynomial ring
@@ -182,3 +182,4 @@ rankGlobalAlgebra (List) := (ZZ) => (Endo) -> (
     -- Get the rank of S/ideal(Endo) as a kk-vector space
     numColumns(basis(S/ideal(Endo)))
     )
+

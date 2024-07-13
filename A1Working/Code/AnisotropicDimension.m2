@@ -9,25 +9,25 @@
 isHyperbolicQp = method()
 isHyperbolicQp (GrothendieckWittClass, ZZ) := Boolean => (beta, p) -> (
     B := beta.matrix;
-    rankForm := numRows(B);
+    rankFormBeta := rankForm beta;
     kk := ring B;
     
     if not (kk === QQ) then error "GrothendieckWittClass is not over QQ";
     if not isPrime(p) then error "second argument must be a prime number";
     
     -- Odd rank forms are not hyperbolic
-    if odd rankForm then return false; 
+    if odd rankFormBeta then return false; 
     
     -- Hyperbolic forms always have square discriminants
     -- Note that Koprowski and Czogala are using a different, signed, version of the discriminant
-    d := (-1)^(rankForm*(rankForm-1)/2) *integralDiscriminant(beta);
+    d := (-1)^(rankFormBeta*(rankFormBeta-1)/2) *integralDiscriminant(beta);
     
     -- If this discriminant is not a square in Q_p then return false
     if not isPadicSquare(d,p) then return false;
     
     -- At this stage, the rank and discriminant of our beta agrees with that of a hyperbolic form,
     -- so by e.g. Lam V.3.25 it suffices to check whether their Hasse-Witt invariants agree
-    m := sub(rankForm/2,ZZ);
+    m := sub(rankFormBeta/2,ZZ);
     HasseWittHyperbolicForm := (HilbertSymbol(-1,-1,p))^(m*(m - 1)/2);
     HasseWittBeta := HasseWittInvariant(beta,p);
     HasseWittHyperbolicForm == HasseWittBeta
@@ -42,24 +42,24 @@ isHyperbolicQp (GrothendieckWittClass, ZZ) := Boolean => (beta, p) -> (
 anisotropicDimensionQp = method()
 anisotropicDimensionQp (GrothendieckWittClass, ZZ) := ZZ => (beta, p) -> (
     B := beta.matrix;
-    rankForm := numRows(B);
+    rankFormBeta := rankForm beta;
     kk := ring B;
     
     if not (kk === QQ) then error "GrothendieckWittClass is not over QQ";
     if not isPrime(p) then error "second argument must be a prime number";
     
-    if even rankForm then (
+    if even rankFormBeta then (
 	-- If the form is hyperbolic it has no anisotropic part
 	if isHyperbolicQp(beta,p) then return 0;
        	
 	-- Note Koprowski and Czogala use a signed version of the discriminant
-	d := (-1)^(rankForm*(rankForm-1)/2) * integralDiscriminant(beta);
+	d := (-1)^(rankFormBeta*(rankFormBeta-1)/2) * integralDiscriminant(beta);
 	if isPadicSquare(d,p) then return 4;
 	return 2;
 	);
     
-    if odd rankForm then (
-	c := (-1)^(rankForm*(rankForm+1)/2) * integralDiscriminant(beta);
+    if odd rankFormBeta then (
+	c := (-1)^(rankFormBeta*(rankFormBeta+1)/2) * integralDiscriminant(beta);
 	gamma := gwAdd(beta, diagonalForm(QQ,(c)));
 	if isHyperbolicQp(gamma,p) then return 1;
 	return 3;
@@ -73,7 +73,7 @@ anisotropicDimensionQp (GrothendieckWittClass, ZZ) := ZZ => (beta, p) -> (
 anisotropicDimensionQQ = method()
 anisotropicDimensionQQ (GrothendieckWittClass) := ZZ => (beta) -> (
     B := beta.matrix;
-    rankForm := numRows(B);
+    rankFormBeta := rankForm beta;
     kk := ring B;
     
     if not (kk === QQ) then error "GrothendieckWittClass is not over QQ";
@@ -108,11 +108,11 @@ anisotropicDimension (Matrix) := (ZZ) => (A) -> (
     if not isSquareAndSymmetric(A) then error "Matrix is not symmetric";
     -- Over CC, the anisotropic dimension is 0 or 1 depending on the parity of the rank
     if instance(k,ComplexField) then (
-        return (rank(A)%2);
+        return (rankForm(A)%2);
         )
     -- Over RR, the anisotropic dimension is the absolute value of the signature
     else if instance(k,RealField) then (
-        diagonalA := congruenceDiagonalize(A);
+        diagonalA := congruenceDiagonalize A;
         return (abs(numPosDiagEntries(diagonalA) - numNegDiagEntries(diagonalA)));
         )
     -- Over QQ, call anisotropicDimensionQQ
@@ -123,11 +123,11 @@ anisotropicDimension (Matrix) := (ZZ) => (A) -> (
     -- if the number of nonzero diagonal entries is even, then the anisotropic dimension is either 0 or 2
     -- depending on whether the nondegenerate part of the form is totally hyperbolic
     else if (instance(k, GaloisField) and k.char != 2) then (
-        diagA := congruenceDiagonalize(A);
-        if (rank(diagA)%2 == 1) then (
+        diagA := congruenceDiagonalize A;
+        if (rankForm(diagA)%2 == 1) then (
             return 1;
             )
-        else if (legendreBoolean(det(nondegeneratePartDiagonal(diagA))) == legendreBoolean(sub((-1)^(rank(diagA)/2),k))) then (
+        else if (legendreBoolean(det(nondegeneratePartDiagonal(diagA))) == legendreBoolean(sub((-1)^(rankForm(diagA)/2),k))) then (
             return 0;
             )
         else (
@@ -145,5 +145,5 @@ anisotropicDimension (GrothendieckWittClass) := (ZZ) => (alpha) -> (
 
 WittIndex = method()
 WittIndex (GrothendieckWittClass) := (ZZ) => (alpha) -> (
-    sub((rank(alpha) - anisotropicDimension(alpha))/2,ZZ)
+    sub((rankForm(alpha) - anisotropicDimension(alpha))/2,ZZ)
     )

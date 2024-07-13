@@ -46,7 +46,7 @@ QQanisotropicDimension3 (GrothendieckWittClass) := (GrothendieckWittClass) => be
     -- We are looking for an element which is equivalent to d-1 mod p for each p in L1 and equivalent to p mod p^2 for each p in L2
     -- We use the chineseRemainder method from the "Parametrization" package to find such an element
     alpha := chineseRemainder(S1 | S2, L1 | L2);
-    a := squarefreePart(alpha);
+    a := squarefreePart alpha;
     diagonalForm(QQ,a)
     )
 
@@ -58,16 +58,16 @@ QQanisotropicDimension2 = method()
 QQanisotropicDimension2 (GrothendieckWittClass) := (GrothendieckWittClass) => beta -> (
     if not (anisotropicDimensionQQ(beta) == 2) then error "anisotropic dimension of form is not 2";
 
-    n := numRows beta.matrix;
+    n := rankForm beta;
 
     -- Shortcut: if the form has anisotropic dimension 2 and the form is dimension 2, return the form itself
-    if (n==2) then return beta; 
+    if n == 2 then return beta; 
     
     -- Step 1: We want the Witt index to be 0 mod 4 in their terminology --- note they define the Witt index to be
     -- the integer w so that q = wH + q_a.
-    w := WittIndex(beta);
+    w := WittIndex beta;
     q := beta;
-    if ((w % 4) != 0) then (
+    if (w % 4) != 0 then (
 	w = w % 4;
 	q = gwAdd(q, hyperbolicForm(QQ,2*(4-w)));
 	n = n + 2*(4-w);
@@ -90,7 +90,7 @@ QQanisotropicDimension2 (GrothendieckWittClass) := (GrothendieckWittClass) => be
 	s := #S;
 
 	-- Step 5a: Make a basis for the group of S-singular elements
-	basisES = append(S,-1);
+	basisES:= append(S,-1);
 	m := #basisES;
 
     	-- Step 5c: Make a vector of exponents of Hasse invariants
@@ -164,8 +164,8 @@ QQanisotropicDimension2 (GrothendieckWittClass) := (GrothendieckWittClass) => be
 
 QQanisotropicPart = method()
 QQanisotropicPart (GrothendieckWittClass) := (GrothendieckWittClass) => (beta) -> (
-    beta = diagonalClass(beta);
-    n := numRows(beta.matrix);
+    beta = diagonalClass beta;
+    n := rankForm beta;
     
     -- If the form is anisotropic 
     if anisotropicDimension(beta) == n then return beta;
@@ -212,49 +212,49 @@ anisotropicPart (Matrix) := (Matrix) => (A) -> (
     -- Over CC, the anisotropic part is either the rank 0 form or the rank 1 form, depending on the anisotropic dimension
     if instance(k,ComplexField) then (
         if (anisotropicDimension(A) == 0) then (
-            return (diagonalMatrix(CC,{}));
+            return diagonalMatrix(CC,{});
             )
         else (
-            return (matrix(CC,{{1}}));
+            return matrix(CC,{{1}});
             );
         )
     --Over RR, the anisotropic part consists of the positive entries in excess of the number of negative entries, or vice versa
     else if instance(k,RealField) then (
-        diagonalA := congruenceDiagonalize(A);
-        posEntries := numPosDiagEntries(diagonalA);
-        negEntries := numNegDiagEntries(diagonalA);
+        diagonalA := congruenceDiagonalize A;
+        posEntries := numPosDiagEntries diagonalA;
+        negEntries := numNegDiagEntries diagonalA;
         if (posEntries > negEntries) then (
-            return (id_(RR^(posEntries-negEntries)));
+            return id_(RR^(posEntries-negEntries));
             )
         else if (posEntries < negEntries) then (
             return (-id_(RR^(negEntries-posEntries)));
             )
         else (
-            return (diagonalMatrix(RR,{}));
+            return diagonalMatrix(RR,{});
             );
         )
     -- Over QQ, call anisotropicPartQQ
-    else if (k === QQ) then (
+    else if k === QQ then (
         return (QQanisotropicPart(gwClass(nondegeneratePartDiagonal(A)))).matrix;
         )
     -- Over a finite field, if the anisotropic dimension is 1, then the form is either < 1 > or < e >, where e is any nonsquare representative,
     -- and if the anisotropic dimension is 2 then the form is <1,-e>
     else if (instance(k, GaloisField) and k.char != 2) then (
         diagA := congruenceDiagonalize(A);
-        if (anisotropicDimension(A) == 1) then (
-            return (matrix(k,{{sub((-1)^((rank(diagA)-1)/2),k)*det(nondegeneratePartDiagonal(diagA))}}));
+        if anisotropicDimension(A) == 1 then (
+            return matrix(k,{{sub((-1)^((rankForm(diagA)-1)/2),k)*det(nondegeneratePartDiagonal(diagA))}});
             )
-        else if (anisotropicDimension(A) == 0) then (
-            return (diagonalMatrix(k,{}));
+        else if anisotropicDimension(A) == 0 then (
+            return diagonalMatrix(k,{});
             )
         else (
-            return (matrix(k,{{1,0},{0,sub((-1)^((rank(diagA)-2)/2),k)*det(nondegeneratePartDiagonal(diagA))}}));
+            return matrix(k,{{1,0},{0,sub((-1)^((rankForm(diagA)-2)/2),k)*det(nondegeneratePartDiagonal(diagA))}});
             );
         );
     )
 
 anisotropicPart (GrothendieckWittClass) := (GrothendieckWittClass) => (alpha) -> (
-    gwClass(anisotropicPart(alpha.matrix))
+    gwClass anisotropicPart(alpha.matrix)
     )
 
 ---------------------------------------
@@ -266,27 +266,27 @@ anisotropicPart (GrothendieckWittClass) := (GrothendieckWittClass) => (alpha) ->
 sumDecompositionVerbose = method()
 sumDecompositionVerbose (GrothendieckWittClass) := (GrothendieckWittClass, String) => beta -> (
     -- Get base field of beta
-    kk := baseField(beta);
+    kk := baseField beta;
 
-    if numRows(beta.matrix) == 0 then (
+    if rankForm(beta) == 0 then (
 	return (gwClass(diagonalMatrix(kk,{})),"empty form");
 	);
     
     outputString := "";
     
     -- Get isotropic dimension of beta and construct its isotropic and anistropic parts
-    w := WittIndex(beta);
+    w := WittIndex beta;
     
     if w > 0 then (
 	outputString = outputString | toString(w) | "H";
 	);
     
     hyperbolicPart := hyperbolicForm(kk,2*w);
-    alpha := anisotropicPart(beta);
+    alpha := anisotropicPart beta;
     
-    if numRows(alpha.matrix) > 0 then (
-        D := diagonalEntries(alpha);
-        for i from 0 to (length(D)-1) do (
+    if rankForm(alpha) > 0 then (
+        D := diagonalEntries alpha;
+        for i from 0 to (length(D) - 1) do (
 	    outputString = outputString | "+ <" | toString(D_i) | ">";
             );
 	);

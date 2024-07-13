@@ -14,7 +14,7 @@ globalA1Degree (List) := (GrothendieckWittClass) => (Endo) -> (
     -- Get the underlying ring, and ensure it is a field
     kk := coefficientRing(ring(Endo#0)); 
     if not isField(kk) then (
-	kk = toField(kk);
+	kk = toField kk;
 	);
     
     -- Let S = kk[x_1..x_n] be the ambient polynomial ring
@@ -28,8 +28,8 @@ globalA1Degree (List) := (GrothendieckWittClass) => (Endo) -> (
     
     -- If the field is CC, output the Grothendieck-Witt class of an identity matrix of the appropriate rank
     if instance(kk,ComplexField) then (
-    	rankAlgebra := rankGlobalAlgebra(Endo);
-    	return gwClass(id_(CC^rankAlgebra));
+    	rankAlgebra := rankGlobalAlgebra Endo;
+    	return gwClass id_(CC^rankAlgebra);
         );
     
     -- If the field is RR, ask the user to run the computation over QQ instead and then base chnage to RR
@@ -83,17 +83,17 @@ globalA1Degree (List) := (GrothendieckWittClass) => (Endo) -> (
     RY := kk[Y_1..Y_n];
 
     -- mapxtoX replaces all instances of x_i with X_i; mapxtoY replaces all instances of y_i with Y_i
-    mapxtoX := (map(RX,S,toList(X_1..X_n))); 
-    mapxtoY := (map(RY,S,toList(Y_1..Y_n)));
+    mapxtoX := map(RX,S,toList(X_1..X_n)); 
+    mapxtoY := map(RY,S,toList(Y_1..Y_n));
 
     -- Compute the standard basis of kk[X_1, ..., X_n]/(f_1, ..., f_n)
     standBasisX := basis (RX/(ideal (leadTerm (mapxtoX ideal Endo)))); 
     standBasisY := basis (RY/(ideal (leadTerm (mapxtoY ideal Endo)))); 
 
     -- Define an ideal (f_1(X), ..., f_n(X))
-    id1 := (ideal apply(toList(0..n-1), i-> mapxtoX(Endo_i))); 
+    id1 := ideal apply(toList(0..n-1), i-> mapxtoX(Endo_i)); 
     -- Define an ideal (f_1(Y), ..., f_n(Y))
-    id2 := (ideal apply(toList(0..n-1), i-> mapxtoY(Endo_i))); 
+    id2 := ideal apply(toList(0..n-1), i-> mapxtoY(Endo_i)); 
 
     -- Take the sum of ideals (f_1(X),...,f_n(X)) + (f_1(Y),...,f_n(Y)) in the ring kk[X_1..Y_n]
     promotedEndo := sub(id1,R)+sub(id2,R); 
@@ -124,7 +124,7 @@ globalA1Degree (List) := (GrothendieckWittClass) => (Endo) -> (
             B_(i,j) = phi0(coefficient((sBXProm_(0,i)**sBYProm_(0,j))_(0,0), bezDetRed));
             );
         );
-    gwClass(matrix(B))
+    gwClass matrix(B)
     )
 
 ---------
@@ -143,7 +143,7 @@ localA1Degree (List, Ideal) := (GrothendieckWittClass) => (Endo,p) -> (
     -- Get the underlying ring, and ensure it is a field
     kk := coefficientRing(ring(Endo#0)); 
     if not isField(kk) then (
-	kk = toField(kk);
+	kk = toField kk;
 	);
 
     -- Let S = kk[x_1..x_n] be the ambient polynomial ring
@@ -153,7 +153,7 @@ localA1Degree (List, Ideal) := (GrothendieckWittClass) => (Endo,p) -> (
     J := (ideal Endo):saturate(ideal Endo,p);
     
     -- Get the dimension of the local algebra Q_p(f)
-    localFormRank := numColumns(basis(S/J));
+    localFormRank := numColumns basis(S/J);
     
     -- Check whether the morphism has isolated zeroes
     if dim ideal(Endo) > 0 then error "morphism does not have isolated zeroes";
@@ -163,7 +163,7 @@ localA1Degree (List, Ideal) := (GrothendieckWittClass) => (Endo,p) -> (
 
     -- If the field is CC, output the Grothendieck-Witt class of an identity matrix of the appropriate rank
     if instance(kk,ComplexField) then (
-    	return gwClass(id_(CC^localFormRank));
+    	return gwClass id_(CC^localFormRank);
         );
 
     -- If the field is RR, ask the user to run the computation over QQ instead and then base chnage to RR
@@ -217,12 +217,12 @@ localA1Degree (List, Ideal) := (GrothendieckWittClass) => (Endo,p) -> (
     RY := kk[Y_1..Y_n];
     
     -- mapxtoX replaces all instances of x_i with X_i; mapxtoY replaces all instances of y_i with Y_i
-    mapxtoX := (map(RX,S,toList(X_1..X_n)));
-    mapxtoY := (map(RY,S,toList(Y_1..Y_n)));
+    mapxtoX := map(RX,S,toList(X_1..X_n));
+    mapxtoY := map(RY,S,toList(Y_1..Y_n));
 
     -- Find the standard basis and define the local quotient ring
-    list1 := (apply(toList(0..n-1), i-> mapxtoX(Endo_i))); -- list (f_1(X), ..., f_n(X))
-    list2 := (apply(toList(0..n-1), i-> mapxtoY(Endo_i))); -- list (f_1(Y), ..., f_n(Y))
+    list1 := apply(toList(0..n-1), i-> mapxtoX(Endo_i)); -- list (f_1(X), ..., f_n(X))
+    list2 := apply(toList(0..n-1), i-> mapxtoY(Endo_i)); -- list (f_1(Y), ..., f_n(Y))
     
     -- Apply localAlgebraBasis to compute standard basis for localization
     standBasisX := localAlgebraBasis(list1,mapxtoX p);
@@ -257,5 +257,5 @@ localA1Degree (List, Ideal) := (GrothendieckWittClass) => (Endo,p) -> (
             B_(i,j) = phi0(coefficient((sBXProm_i**sBYProm_j)_(0,0), bezDetRed));
             );
         );
-    gwClass(matrix(B))
+    gwClass matrix(B)
     )
