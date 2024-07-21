@@ -5,38 +5,38 @@
 -- Input: An integer or rational number
 -- Output: The smallest magnitude integer in the same integer square class as the input
 
-squarefreePart = method()
-squarefreePart (ZZ) := (ZZ) => (n) -> (
+getSquarefreePart = method()
+getSquarefreePart ZZ := ZZ => n -> (
     if n == 0 then return 0;
-    tableOfPrimeFactors := hashTable(factor(abs(n)));
+    tableOfPrimeFactors := hashTable factor abs(n);
     return sub(n/abs(n),ZZ)*product(apply(keys(tableOfPrimeFactors),p -> p^(tableOfPrimeFactors#p%2)));
     )
 
-squarefreePart (QQ) := (ZZ) => (n) -> (
-    squarefreePart(numerator(n)*denominator(n))
+getSquarefreePart QQ := ZZ => n -> (
+    getSquarefreePart(numerator(n)*denominator(n))
     )
 
 -- Input: An integer or rational number n
 -- Output: A list of prime factors of n
 
-primeFactors = method()
-primeFactors (ZZ) := List => (n) -> (
+getPrimeFactors = method()
+getPrimeFactors ZZ := List => n -> (
     if abs(n) == 1 then return {};
-    sort keys(hashTable(factor(abs(n))))
+    sort keys hashTable(factor abs n)
     )
 
-primeFactors (QQ) := List => (n) -> (
+getPrimeFactors QQ := List => n -> (
     if not liftable(n,ZZ) then error "tried to take prime factors of a rational";
-    primeFactors(sub(n,ZZ))   
+    getPrimeFactors sub(n,ZZ)  
     )
 
 -- Input: An integer or rational number and a prime number p
 -- Output: The p-adic valuation of the integer or rational number
 
-padicValuation = method()
-padicValuation (ZZ, ZZ) := (ZZ) => (n, p) -> (
+getPadicValuation = method()
+getPadicValuation (ZZ, ZZ) := ZZ => (n, p) -> (
     if n == 0 then error "Trying to find prime factorization of 0";
-    H := hashTable(factor(abs(n)));
+    H := hashTable factor abs(n);
     if H#?p then (
     	return(H#p);
 	)
@@ -45,16 +45,16 @@ padicValuation (ZZ, ZZ) := (ZZ) => (n, p) -> (
 	);
     )
 
-padicValuation (QQ, ZZ) := (ZZ) => (q, p) -> (
-    padicValuation(numerator(q),p) - padicValuation(denominator(q),p)
+getPadicValuation (QQ, ZZ) := ZZ => (q, p) -> (
+    getPadicValuation(numerator(q),p) - getPadicValuation(denominator(q),p)
     )
 
 -- Input: An element of a finite field
 -- Output: Boolean that gives whether the element is a square
 
-legendreBoolean = method()
-legendreBoolean (RingElement) := (Boolean) => a -> (
-    if not instance(ring(a),GaloisField) then error "legendreBoolean only works for Galois fields";
+isGFSquare = method()
+isGFSquare RingElement := Boolean => a -> (
+    if not instance(ring a,GaloisField) then error "isGFSquare only works for Galois fields";
     q := (ring a).order;
     -- Detects if a is a square in F_q
     a^((q-1)//2) == 1 
@@ -64,15 +64,14 @@ legendreBoolean (RingElement) := (Boolean) => a -> (
 -- Output: 1 if a is a unit square, -1 if a = p^(even power) x (non-square unit), 0 otherwise
 -- Note: The terminology "Square Symbol" comes from John Voight's Quaternion Algebra book
 
-squareSymbol = method()
-squareSymbol(ZZ, ZZ) := (ZZ) => (a, p) -> (
-    x := getSymbol "x";
-    R := GF(p, Variable => x);
-    e1 := padicValuation(a,p);
+getSquareSymbol = method()
+getSquareSymbol (ZZ, ZZ) := ZZ => (a, p) -> (
+    R := GF(p);
+    e1 := getPadicValuation(a,p);
     if even e1 then (
     	a1 := sub(a/(p^e1), ZZ);
 	a2 := sub(a1, R);
-	if legendreBoolean a2 then (
+	if isGFSquare a2 then (
 	    return 1;
 	    ) 
 	else (
@@ -89,40 +88,39 @@ squareSymbol(ZZ, ZZ) := (ZZ) => (a, p) -> (
 -- Input: Two integers a and b, and a prime number p
 -- Output: Boolean that gives whether a and b differ by a square in Q_p
 
-equalUptoPadicSquare = method()
-equalUptoPadicSquare (ZZ, ZZ, ZZ) := (Boolean) => (a, b, p) -> (
+isEqualUpToPadicSquare = method()
+isEqualUpToPadicSquare (ZZ, ZZ, ZZ) := Boolean => (a, b, p) -> (
     
 -- One has to separately handle the cases when p is odd and when p = 2
 
     if odd p then (
         -- p is odd and we need to check that the powers of p have the same parity, and the units
         -- differ by a square in GF(p)
-        a1 := squarefreePart a;
-        b1 := squarefreePart b;
-        if (padicValuation(a1, p) != padicValuation(b1, p)) then (
-	    return false;
+        a1 := getSquarefreePart a;
+        b1 := getSquarefreePart b;
+        if (getPadicValuation(a1, p) != getPadicValuation(b1, p)) then (
+            return false;
             )
         else (
     	    -- c1 will be an integer prime to p
-	    c1 := squarefreePart(a1*b1);
-	    x := getSymbol "x";
-	    return (legendreBoolean(sub(c1, GF(p, Variable => x)))); 
+	    c1 := getSquarefreePart(a1*b1);
+	    return isGFSquare sub(c1, GF(p)); 
 	    );
         )
     else (
         -- Case when p=2. Here we have to check that the powers of p have the same parity, and 
         -- that the units agree mod 8.
-        a1 = squarefreePart a;
-        b1 = squarefreePart b;
-        if (padicValuation(a1, p) != padicValuation(b1, p)) then (
+        a1 = getSquarefreePart a;
+        b1 = getSquarefreePart b;
+        if getPadicValuation(a1, p) != getPadicValuation(b1, p) then (
 	    return false;
             )
         else (
     	    -- c1 will be an integer prime to p
-	    c1 = squarefreePart(a1*b1);
+	    c1 = getSquarefreePart(a1*b1);
 	    c1 = c1 % 8;
 	    -- If c1 = 1, then the two odd units are congruent mod 8, and are squares in Q_2
-	    return (c1 == 1); 
+	    return c1 == 1; 
 	    );
         );
     )
@@ -131,8 +129,8 @@ equalUptoPadicSquare (ZZ, ZZ, ZZ) := (Boolean) => (a, b, p) -> (
 -- Output: Boolean that gives whether a is a square in QQ_p
 
 isPadicSquare = method()
-isPadicSquare (ZZ, ZZ) := (Boolean) => (a, p) -> (
-    equalUptoPadicSquare(a,1,p)
+isPadicSquare (ZZ, ZZ) := Boolean => (a, p) -> (
+    isEqualUpToPadicSquare(a,1,p)
     )
 
 ------------------------------
@@ -142,11 +140,11 @@ isPadicSquare (ZZ, ZZ) := (Boolean) => (a, p) -> (
 -- Input: A list L of functions f1,...,fn over the same ring R and p is a prime ideal of an isolated zero
 -- Output: A list of basis elements of the local k-algebra Q_p(f) = R[x]_p/(f)
 
-localAlgebraBasis = method()
-localAlgebraBasis (List, Ideal) := (List) => (L,p) -> (
+getLocalAlgebraBasis = method()
+getLocalAlgebraBasis (List, Ideal) := List => (L, p) -> (
     
     -- Verify that the ideal p is prime
-    if not isPrime(p) then error "ideal is not prime";
+    if not isPrime p then error "ideal is not prime";
     
     -- Ambient ring
     R := ring L#0;
@@ -158,18 +156,18 @@ localAlgebraBasis (List, Ideal) := (List) => (L,p) -> (
     J := I:saturate(I,p);
     A := R/J;
     B := basis A;
-    flatten entries(B)
+    flatten entries B
     )
 
 -- Input: A zero-dimensional ideal (f_1,...,f_n) < k[x_1,...,x_n].
 -- Output: The rank of the global algebra as a k-vector space.
 
-rankGlobalAlgebra = method()
-rankGlobalAlgebra (List) := (ZZ) => (Endo) -> (
+getGlobalAlgebraRank = method()
+getGlobalAlgebraRank List := ZZ => Endo -> (
     
     -- Get the underlying field    
-    kk := coefficientRing(ring(Endo#0));    
-    if not isField(kk) then (
+    kk := coefficientRing ring(Endo#0);    
+    if not isField kk then (
     	kk = toField kk;
     	);
     
@@ -180,6 +178,49 @@ rankGlobalAlgebra (List) := (ZZ) => (Endo) -> (
     if dim ideal(Endo) > 0  then error "ideal is not zero-dimensional";
     
     -- Get the rank of S/ideal(Endo) as a kk-vector space
-    numColumns(basis(S/ideal(Endo)))
+    numColumns basis(S/ideal(Endo))
     )
 
+-- Input: A pair of integers a,b
+-- Output: x,y such that a*x + b*y = gcd(a,b)
+-- This is adapted from the igcdx method from the Parametrization package
+
+computeExtendedEuclidean = method()
+computeExtendedEuclidean(ZZ, ZZ) := (a, b) -> (
+    if a % b == 0 then (
+        return {0, 1};
+        )
+    else (
+        L := computeExtendedEuclidean(b, a % b);
+        return {L#1, L#0 - L#1*(a // b)};
+        );
+    )
+
+-- Input: A set of four integers a, b, p, q
+-- Output: An integer solution x to the congruences x = a (mod p) and x = b (mod q)
+-- This is adapted from the chineseRemainder0 method from the Parametrization package
+
+solveCongruencePair = method()
+solveCongruencePair(ZZ, ZZ, ZZ, ZZ) := (a, b, n, m) -> (
+    k := a - b;
+    L := computeExtendedEuclidean(n, m);
+    u := L#0;
+    v := L#1;
+    a - k*u*n % n*m
+    )
+
+-- This is adapted from the chineseRemainder method from the Parametrization package
+
+solveCongruenceList = method()
+solveCongruenceList(List, List) := (L1, L2) -> (
+    q := 1;
+    a := L1#0;
+    n := L2#0;
+    L := {};
+    while q<#L1 do (
+        a = solveCongruencePair(a, L1#q, n, L2#q);
+        n = n*L2#q;
+        q = q + 1
+        );
+    a
+    )

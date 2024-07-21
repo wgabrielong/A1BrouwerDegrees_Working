@@ -5,30 +5,30 @@
 -- Input: A Grothendieck-Witt class beta over QQ, RR, CC, or a finite field of characteristic not 2
 -- Output: A diagonalized form of beta, with squarefree entries on the diagonal
 
-diagonalClass = method()
-diagonalClass (GrothendieckWittClass) := (GrothendieckWittClass) => (beta) -> (
+getDiagonalClass = method()
+getDiagonalClass GrothendieckWittClass := GrothendieckWittClass => beta -> (
 
-    -- Check if the diagonalClass has already been computed; if so, recall it from the cache
-    if beta.cache.?diagonalClass then return beta.cache.diagonalClass;
+    -- Check if the getDiagonalClass has already been computed; if so, recall it from the cache
+    if beta.cache.?getDiagonalClass then return beta.cache.getDiagonalClass;
 
-    diagonalClassOfBetaMatrix := congruenceDiagonalizeSimplify(beta.matrix);
+    getDiagonalClassOfBetaMatrix := diagonalizeAndSimplifyViaCongruence getMatrix beta;
 
     -- The diagonal form gets cached in the GWClass type
-    beta.cache.diagonalClass = gwClass diagonalClassOfBetaMatrix;
-    gwClass diagonalClassOfBetaMatrix
+    beta.cache.getDiagonalClass = makeGWClass getDiagonalClassOfBetaMatrix;
+    makeGWClass getDiagonalClassOfBetaMatrix
     )
 
 -- Input: A Grothendieck-Witt class beta over QQ, RR, CC, or a finite field of characteristic not 2
 -- Output: A list of the diagonal entries of a diagonal matrix representing beta
 
-diagonalEntries = method()
-diagonalEntries (GrothendieckWittClass) := (List) => (beta) -> (
+getDiagonalEntries = method()
+getDiagonalEntries GrothendieckWittClass := List => beta -> (
     
-    M := congruenceDiagonalize(beta.matrix);
+    M := diagonalizeViaCongruence getMatrix beta;
     n := numRows M;
     L := {};
     
-    for i from 0 to (n-1) do (
+    for i from 0 to n - 1 do (
 	L = append(L, M_(i,i));
 	);
     L

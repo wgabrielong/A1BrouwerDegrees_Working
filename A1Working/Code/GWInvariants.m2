@@ -5,35 +5,33 @@
 -- Input: A Grothendieck-Witt class
 -- Output: The rank of a quadratic form representing the Grothendieck-Witt class
 
-rankForm = method()
-rankForm (GrothendieckWittClass) := (ZZ) => (alpha) -> (
-    numRows(alpha.matrix)
+getRank = method()
+getRank GrothendieckWittClass := ZZ => alpha -> (
+    numRows getMatrix alpha
     )
 
-rankForm (Matrix) := (ZZ) => (M) -> (
+getRank Matrix := ZZ => M -> (
     rank M
     )
 
-
-
 -- Input: A symmetric matrix over QQ or RR
 -- Output: The number of positive entries on the diagonal of a diagonal matrix to which it is congruent
--- Note: numPosDiagEntries is *not* included as a method in the A1BrowerDegrees package
+-- Note: countPosDiagEntries is *not* included as a method in the A1BrowerDegrees package
 
-numPosDiagEntries = method()
-numPosDiagEntries (Matrix) := (Matrix) => (A) -> (
+countPosDiagEntries = method()
+countPosDiagEntries Matrix := Matrix => A -> (
     -- Ensure matrix is symmetric
-    if not isSquareAndSymmetric(A) then error "Matrix is not symmetric";
+    if not isSquareAndSymmetric A then error "Matrix is not symmetric";
     -- Ensure base field is QQ or RR
     k := ring A;
     if not (instance(k,RealField) or k === QQ) then (
         error "Only implemented over QQ and RR";
         );
-    if not isDiagonal(A) then (
-        A = congruenceDiagonalize(A);
+    if not isDiagonal A then (
+        A = diagonalizeViaCongruence A;
         );
     posDiagEntries := 0;
-    for i from 0 to (numRows(A) - 1) do (
+    for i from 0 to numRows(A) - 1 do (
         if A_(i,i) > 0 then (
             posDiagEntries = posDiagEntries + 1;
             );
@@ -43,22 +41,22 @@ numPosDiagEntries (Matrix) := (Matrix) => (A) -> (
 
 -- Input: A diagonal matrix over QQ or RR
 -- Output: The number of positive entries on the diagonal of a diagonal matrix to which it is congruent
--- Note: numPosDiagEntries is *not* included as a method in the A1BrowerDegrees package
+-- Note: countPosDiagEntries is *not* included as a method in the A1BrowerDegrees package
 
-numNegDiagEntries = method()
-numNegDiagEntries (Matrix) := (Matrix) => (A) -> (
+countNegDiagEntries = method()
+countNegDiagEntries Matrix := Matrix => A -> (
     -- Ensure matrix is symmetric
-    if not isSquareAndSymmetric(A) then error "Matrix is not symmetric";
+    if not isSquareAndSymmetric A then error "Matrix is not symmetric";
     -- Ensure base field is QQ or RR
     k := ring A;
     if not (instance(k,RealField) or k === QQ) then (
         error "Only implemented over QQ and RR";
         );
-    if not isDiagonal(A) then (
-        A = congruenceDiagonalize A;
+    if not isDiagonal A then (
+        A = diagonalizeViaCongruence A;
         );
     negDiagEntries := 0;
-    for i from 0 to (numRows(A) - 1) do (
+    for i from 0 to numRows(A) - 1 do (
         if A_(i,i) < 0 then (
             negDiagEntries = negDiagEntries + 1;
             );
@@ -68,28 +66,26 @@ numNegDiagEntries (Matrix) := (Matrix) => (A) -> (
 
 -- Input: A Grothendieck-Witt class defined over QQ or RR
 -- Output: The number of positive entries on the diagonal of a diagonal matrix representing the Grothendieck-Witt class
--- Note: numPosEntries is *not* included as a method in the A1BrowerDegrees package
+-- Note: countPosDiagEntries is *not* included as a method in the A1BrowerDegrees package
 
-numPosEntries = method()
-numPosEntries (GrothendieckWittClass) := ZZ => beta -> (
-    numPosDiagEntries(beta.matrix)
+countPosDiagEntries GrothendieckWittClass := ZZ => beta -> (
+    countPosDiagEntries getMatrix beta
     )
 
 -- Input: A Grothendieck-Witt class beta defined over QQ or RR
 -- Output: The number of negative entries on the diagonal of a diagonal matrix representing the Grothendieck-Witt class
--- Note: numNegEntries is *not* included as a method in the A1BrowerDegrees package
+-- Note: countNegDiagEntries is *not* included as a method in the A1BrowerDegrees package
 
-numNegEntries = method()
-numNegEntries (GrothendieckWittClass) := ZZ => beta -> (
-    numNegDiagEntries(beta.matrix)
+countNegDiagEntries GrothendieckWittClass := ZZ => beta -> (
+    countNegDiagEntries getMatrix beta
     )
 
 -- Input: A Grothendieck-Witt class beta defined over QQ or RR
--- Output: The signature of beta
+-- Output: The getSignature of beta
 
-signature = method()
-signature (GrothendieckWittClass) := ZZ => (beta) -> (
-    numPosEntries(beta) - numNegEntries(beta)
+getSignature = method()
+getSignature GrothendieckWittClass := ZZ => beta -> (
+    countPosDiagEntries(beta) - countNegDiagEntries(beta)
     )
 
 ---------------------------
@@ -99,30 +95,30 @@ signature (GrothendieckWittClass) := ZZ => (beta) -> (
 -- Input: A Grothendieck-Witt class defined over QQ
 -- Output: A squarefree integral representative of its discriminant
 
-integralDiscriminant = method()
-integralDiscriminant (GrothendieckWittClass) := (ZZ) => (beta) -> (
-    kk := baseField beta;
+getIntegralDiscriminant = method()
+getIntegralDiscriminant GrothendieckWittClass := ZZ => beta -> (
+    kk := getBaseField beta;
     if not kk === QQ then error "GrothendieckWittClass is not over QQ";
 
     -- Return a squarefree integral representative of the product of diagonal entries of a diagonal representative of the form 
-    squarefreePart product(diagonalEntries(beta))
+    getSquarefreePart product getDiagonalEntries(beta)
     )
 
 -- Input: A Grothendieck-Witt class defined over QQ
 -- Output: The list of primes that divide entries of its diagonal representative
 
-relevantPrimes = method()
-relevantPrimes (GrothendieckWittClass) := List => (beta) -> (
-    kk := baseField beta;
+getRelevantPrimes = method()
+getRelevantPrimes GrothendieckWittClass := List => beta -> (
+    kk := getBaseField beta;
     if not kk === QQ then error "GrothendieckWittClass is not over QQ";
     
     -- Find the diagonal entries of a diagonal integral representative of the form
-    D := diagonalEntries( diagonalClass beta );
+    D := getDiagonalEntries getDiagonalClass beta;
     
     -- Make a list of all prime factors of diagonal entries
     L := {};
     for x in D do (
-	L = unique(L | primeFactors(sub(x,ZZ)));
+	L = unique(L | getPrimeFactors(sub(x,ZZ)));
 	);
     L
     )
@@ -131,9 +127,9 @@ relevantPrimes (GrothendieckWittClass) := List => (beta) -> (
 -- or a Grothendieck-Witt class over QQ, and a prime number p
 -- Output: The Hasse-Witt invariant of the quadratic form or Grothendieck-Witt class over Q_p
 
-HasseWittInvariant = method()
-HasseWittInvariant (List, ZZ) := ZZ => (L,p) -> (
-    if not isPrime(p) then error "second argument must be a prime number";
+getHasseWittInvariant = method()
+getHasseWittInvariant (List, ZZ) := ZZ => (L, p) -> (
+    if not isPrime p then error "second argument must be a prime number";
 
     a := 1;
     len := #L;
@@ -141,19 +137,19 @@ HasseWittInvariant (List, ZZ) := ZZ => (L,p) -> (
     -- Replace every entry of L by its squarefree part so we can work with integers
     f := {};
     for x in L do (
-	f = append(f,squarefreePart(x));
+	f = append(f,getSquarefreePart x);
 	);
     for i from 0 to len - 2 do (
        	for j from i + 1 to len - 1 do (
-	    a = a * HilbertSymbol(f_i, f_j, p);
+	    a = a * getHilbertSymbol(f_i, f_j, p);
 	    );
 	);
     a
     )
 
-HasseWittInvariant(GrothendieckWittClass, ZZ) := ZZ => (beta,p) -> (
-    kk := baseField beta;
-    if not (kk === QQ) then error "method is only implemented over the rationals";
-    HasseWittInvariant(diagonalEntries(beta),p)
+getHasseWittInvariant(GrothendieckWittClass, ZZ) := ZZ => (beta,p) -> (
+    kk := getBaseField beta;
+    if not kk === QQ then error "method is only implemented over the rationals";
+    getHasseWittInvariant(getDiagonalEntries beta, p)
     )
 
